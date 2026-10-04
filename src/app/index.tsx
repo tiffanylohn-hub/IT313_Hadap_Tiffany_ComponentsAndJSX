@@ -1,98 +1,143 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, Text, StyleSheet, Button } from 'react-native';
+import { useState } from 'react';
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+const students = [
+  {
+    id: 's1',
+    name: 'Ana Cruz',
+    course: 'IT313',
+    units: 21,
+    isFullLoad: true,
+  },
+  {
+    id: 's2',
+    name: 'Bea Santos',
+    course: 'IT313',
+    units: 15,
+    isFullLoad: false,
+  },
+  {
+    id: 's3',
+    name: 'Cid Ramos',
+    course: 'IT313',
+    units: 18,
+    isFullLoad: true,
+  },
+  {
+    id: 's4',
+    name: 'Dex Alonzo',
+    course: 'IT313',
+    units: 12,
+    isFullLoad: false,
+  },
+];
 
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
+type StudentCardProps = {
+  name: string;
+  course: string;
+  units: number;
+  isFullLoad: boolean;
+};
+
+function StudentCard({
+  name,
+  course,
+  units,
+  isFullLoad,
+}: StudentCardProps) {
   return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
+    <View style={styles.card}>
+      <Text style={styles.name}>{name}</Text>
+
+      <Text style={styles.info}>Course: {course}</Text>
+
+      <Text style={styles.info}>Units: {units}</Text>
+
+      {isFullLoad && (
+        <Text style={styles.fullLoad}>Full Load</Text>
+      )}
+    </View>
+  );
+}
+
+function StudentRoster() {
+  const [studentList, setStudentList] = useState(students);
+
+  const reverseStudents = () => {
+    setStudentList([...studentList].reverse());
+  };
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Student Roster</Text>
+
+      <Text style={styles.total}>
+        Total Students: {studentList.length}
+      </Text>
+
+      <Button
+        title="Reverse Students"
+        onPress={reverseStudents}
+      />
+
+      {studentList.map((student,) => (
+        <StudentCard
+          key={student.id}
+          name={student.name}
+          course={student.course}
+          units={student.units}
+          isFullLoad={student.isFullLoad}
+        />
+      ))}
+    </View>
   );
 }
 
 export default function HomeScreen() {
-  return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
-
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
-
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
-
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
-  );
+  return <StudentRoster />;
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
+    padding: 20,
+    paddingTop: 60,
+    backgroundColor: '#f5f7fb',
   },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
-  },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
-  },
+
   title: {
-    textAlign: 'center',
+    fontSize: 28,
+    fontWeight: 'bold',
+    marginBottom: 8,
   },
-  code: {
-    textTransform: 'uppercase',
+
+  total: {
+    fontSize: 16,
+    marginBottom: 20,
   },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
+
+  card: {
+    backgroundColor: 'white',
+    padding: 16,
+    marginBottom: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#ddd',
+  },
+
+  name: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 6,
+  },
+
+  info: {
+    fontSize: 15,
+    marginBottom: 3,
+  },
+
+  fullLoad: {
+    marginTop: 8,
+    fontWeight: 'bold',
   },
 });
